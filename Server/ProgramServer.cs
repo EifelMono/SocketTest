@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,24 +12,19 @@ namespace Server
 {
     class Program
     {
-        internal static int ReceiveBufferSize = 4194304; // 4MB Puffer (Default ist 64KB...)
-
         static void Main(string[] args)
         {
             try
             {
-                int Port = 9898;
-                string ServerIp = "127.0.0.1";
-
-                IPAddress ipAddress = IPAddress.Parse(ServerIp);
-                TcpListener listener = new TcpListener(ipAddress, Port);
+                TcpListener listener = new TcpListener(IPAddress.Any, Globals.Port);
+                Console.Title = $"Server: {Globals.Port}";
                 Console.WriteLine("Listening...");
                 listener.Start();
 
                 var mem = new MemoryStream();
 
                 TcpClient client = listener.AcceptTcpClient();
-                client.ReceiveBufferSize = ReceiveBufferSize;
+                client.ReceiveBufferSize = Globals.ReceiveBufferSize;
                 int bytesRead = 0;
                 int totalyBytesRead = 0;
                 NetworkStream nwStream = client.GetStream();
@@ -52,6 +48,7 @@ namespace Server
 
                 client.Close();
                 listener.Stop();
+                Console.WriteLine("Ready waiting for enter");
                 Console.ReadLine();
             }
             catch (Exception ex)

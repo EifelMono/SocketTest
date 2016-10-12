@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Shared;
 
 namespace Client
 {
@@ -14,16 +15,18 @@ namespace Client
         {
             try
             {
-                int Port = 9898;
                 string ServerIp = "127.0.0.1";
                 if (args.Length > 0)
-                {
                     ServerIp = args[0];
-                }
-                Console.Title = "Client";
+
+                Console.Title = $"Client to {ServerIp}:{Globals.Port}";
                 string textToSend = DateTime.Now.ToString();
                 textToSend = File.ReadAllText("ClientData.txt");
-                TcpClient client = new TcpClient(ServerIp, Port);
+                TcpClient client = new TcpClient();
+                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, 10000);
+                client.ReceiveBufferSize = Globals.ReceiveBufferSize;
+
+                client.Connect(IPAddress.Parse(ServerIp), Globals.Port);
 
                 NetworkStream nwStream = client.GetStream();
                 byte[] bytesToSend = ASCIIEncoding.ASCII.GetBytes(textToSend);
@@ -32,7 +35,7 @@ namespace Client
                 client.SendBufferSize = bytesToSend.Length;
                 nwStream.Write(bytesToSend, 0, bytesToSend.Length);
                 nwStream.Flush();
-                // Console.WriteLine("Received : " + Encoding.ASCII.GetString(bytesToRead, 0, bytesRead));
+                Console.WriteLine("Ready waiting for enter");
                 Console.ReadLine();
                 client.Close();
             }
