@@ -22,7 +22,7 @@ namespace Client
                 }
                 Console.Title = "Client";
                 string textToSend = DateTime.Now.ToString();
-                textToSend = File.ReadAllText("RowaScalaVisuData.txt");
+                textToSend = File.ReadAllText("ClientData.txt");
                 TcpClient client = new TcpClient(ServerIp, Port);
 
                 NetworkStream nwStream = client.GetStream();

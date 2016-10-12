@@ -47,7 +47,7 @@ namespace Server
                 mem.Position = 0;
                 using (StreamReader reader = new StreamReader(mem, Encoding.UTF8))
                     dataReceived = reader.ReadToEnd();
-                File.WriteAllText("RowaScalaVisuData.txt", dataReceived);
+                File.WriteAllText("ServerData.txt", dataReceived);
                 Console.WriteLine($"Received string: {dataReceived.Length}");
 
                 client.Close();
