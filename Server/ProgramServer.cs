@@ -21,30 +21,15 @@ namespace Server
                 Console.WriteLine("Listening...");
                 listener.Start();
 
-                var mem = new MemoryStream();
+            
 
                 TcpClient client = listener.AcceptTcpClient();
-                client.ReceiveBufferSize = Globals.ReceiveBufferSize;
-                int bytesRead = 0;
-                int totalyBytesRead = 0;
-                NetworkStream nwStream = client.GetStream();
-                do
-                {
-                    Thread.Sleep(100); // delay!!!
-                    byte[] buffer = new byte[client.ReceiveBufferSize];
-                    bytesRead = nwStream.Read(buffer, 0, client.ReceiveBufferSize);
-                    totalyBytesRead += bytesRead;
-                    mem.Write(buffer, 0, bytesRead);
-                } while (bytesRead == client.ReceiveBufferSize);
 
-                Console.WriteLine($"Received Bytes: {totalyBytesRead}");
+                var text = Globals.Receive(client);
+                File.WriteAllText("ServerData.Txt", text);
 
-                string dataReceived = "";
-                mem.Position = 0;
-                using (StreamReader reader = new StreamReader(mem, Encoding.UTF8))
-                    dataReceived = reader.ReadToEnd();
-                File.WriteAllText("ServerData.txt", dataReceived);
-                Console.WriteLine($"Received string: {dataReceived.Length}");
+                Console.WriteLine("Received Send Back");
+                Globals.Send(client, text);
 
                 client.Close();
                 listener.Stop();
