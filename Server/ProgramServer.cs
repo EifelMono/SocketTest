@@ -31,15 +31,14 @@ namespace Server
                 var text = Globals.Receive(client);
                 File.WriteAllText("ServerData.Txt", text);
 
-                Console.WriteLine("Received Send Back");
                 if (Globals.TransferSize != -1)
                     text = text.Substring(0, Globals.TransferSize);
 
                 Globals.Send(client, text);
 
-                client.Close();
                 listener.Stop();
                 Globals.Done();
+                client.Close();
             }
             catch (Exception ex)
             {

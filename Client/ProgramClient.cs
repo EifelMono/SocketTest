@@ -28,8 +28,6 @@ namespace Client
                 client.Connect(IPAddress.Parse(Globals.IpAddrss), Globals.Port);
                 Globals.Send(client, sText);
 
-                Console.WriteLine("Send read no wait for receive, Waiting 5 Seconds");
-
                 string rText = Globals.Receive(client);
                 File.WriteAllText("ClientDataReceived.Txt", rText);
 

@@ -61,8 +61,14 @@ namespace Shared
             }
             Console.WriteLine($"args[0]:IpAddress={IpAddrss}\r\nargs[1]:ReceiveBufferSize={ReceiveBufferSize}\r\nargs[2]:TransferSize={TransferSize}");
         }
+
+        public static void ConsoleSplit()
+        {
+            Console.WriteLine(new string('-', 60));
+        }
         public static void Send(TcpClient client, string text)
         {
+            ConsoleSplit();
             Console.WriteLine("SendText Length: " + text.Length);
             client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, 10000);
             client.ReceiveBufferSize = Globals.ReceiveBufferSize;
@@ -72,10 +78,13 @@ namespace Shared
             client.SendBufferSize = bytesToSend.Length;
             nwStream.Write(bytesToSend, 0, bytesToSend.Length);
             nwStream.Flush();
+            Console.WriteLine("Send ready");
+            ConsoleSplit();
         }
 
         public static string Receive(TcpClient client)
         {
+            ConsoleSplit();
             Console.WriteLine("Waiting for Datas");
             var result = "";
             var mem = new MemoryStream();
@@ -83,25 +92,41 @@ namespace Shared
             int bytesRead = 0;
             int totalyBytesRead = 0;
             NetworkStream nwStream = client.GetStream();
+            var timeout = Stopwatch.StartNew();
+            bool first = false;
             var ready = false;
-            var first = true;
             while (!ready)
             {
-                byte[] buffer = new byte[client.ReceiveBufferSize];
-                try
+                if (nwStream.DataAvailable)
                 {
-                    bytesRead = nwStream.Read(buffer, 0, client.ReceiveBufferSize);
+                    first = true;
+                    byte[] buffer = new byte[client.ReceiveBufferSize];
+                    try
+                    {
+                        bytesRead = nwStream.Read(buffer, 0, client.ReceiveBufferSize);
+                    }
+                    catch
+                    {
+                    }
+                    if (bytesRead != 0)
+                    {
+                        timeout.Restart();
+                        totalyBytesRead += bytesRead;
+                        mem.Write(buffer, 0, bytesRead);
+                    }
                 }
-                catch { }
-                if (bytesRead != 0)
+                else
                 {
-                    first = false;
-                    totalyBytesRead += bytesRead;
-                    mem.Write(buffer, 0, bytesRead);
-                    Thread.Sleep(100);
+                    if (first)
+                    {
+                        if (timeout.ElapsedMilliseconds > 1000)
+                            ready = !nwStream.DataAvailable;
+                        if (!nwStream.DataAvailable)
+                            Thread.Sleep(100);
+                    }
+                    else
+                        Thread.Sleep(100);
                 }
-                if (!first)
-                    ready = (bytesRead != client.ReceiveBufferSize);
             }
 
             Console.WriteLine($"ReceivedBytes Lenght: {totalyBytesRead}");
@@ -110,6 +135,7 @@ namespace Shared
             using (StreamReader reader = new StreamReader(mem, Encoding.UTF8))
                 result = reader.ReadToEnd();
             Console.WriteLine($"ReceivedText Length: {result.Length}");
+            ConsoleSplit();
             return result;
         }
     }
