@@ -18,26 +18,22 @@ namespace Client
         {
             try
             {
-                string ServerIp = "127.0.0.1";
-                if (args.Length > 0)
-                    ServerIp = args[0];
-                if (args.Length > 1)
-                    Globals.ReceiveBufferSize = (int)Convert.ToInt64(args[1]);
+                Globals.Init(server: false);
+                Globals.ParseCommandLine(args);
 
-                var stopwatch = Stopwatch.StartNew();
-                Console.Title = $"Client ({{Assembly.GetExecutingAssembly().GetName().Version}}): {ServerIp}:{Globals.Port}";
                 string sText = File.ReadAllText("ClientData.txt");
+                if (Globals.TransferSize != -1)
+                    sText = sText.Substring(0, Globals.TransferSize);
                 TcpClient client = new TcpClient();
-                client.Connect(IPAddress.Parse(ServerIp), Globals.Port);
-
+                client.Connect(IPAddress.Parse(Globals.IpAddrss), Globals.Port);
                 Globals.Send(client, sText);
+
                 Console.WriteLine("Send read no wait for receive, Waiting 5 Seconds");
-                Thread.Sleep(5000);
+
                 string rText = Globals.Receive(client);
                 File.WriteAllText("ClientDataReceived.Txt", rText);
 
-                Console.WriteLine($"Ready waiting for enter {stopwatch.ElapsedMilliseconds}");
-                Console.ReadLine();
+                Globals.Done();
                 client.Close();
             }
             catch (Exception ex)

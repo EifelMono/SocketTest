@@ -18,10 +18,10 @@ namespace Server
         {
             try
             {
-                if (args.Length > 0)
-                    Globals.ReceiveBufferSize = (int)Convert.ToInt64(args[0]);
+                Globals.Init(server: true);
+                Globals.ParseCommandLine(args);
+
                 TcpListener listener = new TcpListener(IPAddress.Any, Globals.Port);
-                Console.Title = $"Server ({Assembly.GetExecutingAssembly().GetName().Version}): {Globals.Port}";
                 Console.WriteLine("Listening...");
                 listener.Start();
 
@@ -32,12 +32,14 @@ namespace Server
                 File.WriteAllText("ServerData.Txt", text);
 
                 Console.WriteLine("Received Send Back");
+                if (Globals.TransferSize != -1)
+                    text = text.Substring(0, Globals.TransferSize);
+
                 Globals.Send(client, text);
 
                 client.Close();
                 listener.Stop();
-                Console.WriteLine($"Ready waiting for enter {stopwatch.ElapsedMilliseconds}");
-                Console.ReadLine();
+                Globals.Done();
             }
             catch (Exception ex)
             {
