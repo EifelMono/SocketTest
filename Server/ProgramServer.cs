@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 
@@ -20,7 +21,7 @@ namespace Server
                 if (args.Length > 0)
                     Globals.ReceiveBufferSize = (int)Convert.ToInt64(args[0]);
                 TcpListener listener = new TcpListener(IPAddress.Any, Globals.Port);
-                Console.Title = $"Server: {Globals.Port}";
+                Console.Title = $"Server ({Assembly.GetExecutingAssembly().GetName().Version}): {Globals.Port}";
                 Console.WriteLine("Listening...");
                 listener.Start();
 

@@ -10,6 +10,9 @@ namespace Shared
 {
     public static class Globals
     {
+        public const string AssemblyVersion = "1.0.0.1";
+        public const string AssemblyVersioAssemblyFileVersion = AssemblyVersion;
+        
         public static int ReceiveBufferSize = 4194304; // 4MB Puffer (Default ist 64KB...)
         public static int Port = 9898;
 

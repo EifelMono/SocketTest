@@ -49,12 +49,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Shared\Shared.csproj">
-      <Project>{4629c229-8e4f-47e5-8f46-84e138f629dc}</Project>
-      <Name>Shared</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <Import Project="..\Shared\Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

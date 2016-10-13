@@ -25,7 +25,7 @@ namespace Client
                     Globals.ReceiveBufferSize = (int)Convert.ToInt64(args[1]);
 
                 var stopwatch = Stopwatch.StartNew();
-                Console.Title = $"Cl{ServerIp}:{Globals.Port}";
+                Console.Title = $"Client ({{Assembly.GetExecutingAssembly().GetName().Version}}): {ServerIp}:{Globals.Port}";
                 string sText = File.ReadAllText("ClientData.txt");
                 TcpClient client = new TcpClient();
                 client.Connect(IPAddress.Parse(ServerIp), Globals.Port);
