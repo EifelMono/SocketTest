@@ -12,7 +12,7 @@ namespace Shared
 {
     public static class Globals
     {
-        public const string AssemblyVersion = "1.0.0.1";
+        public const string AssemblyVersion = "1.0.0.2";
         public const string AssemblyVersioAssemblyFileVersion = AssemblyVersion;
 
         public static int Port = 9898;
@@ -101,12 +101,15 @@ namespace Shared
                 {
                     first = true;
                     byte[] buffer = new byte[client.ReceiveBufferSize];
+                    if (buffer== null)
+                        Console.WriteLine("Buffer IS NULL");
                     try
                     {
                         bytesRead = nwStream.Read(buffer, 0, client.ReceiveBufferSize);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        Console.WriteLine(ex.ToString());
                     }
                     if (bytesRead != 0)
                     {
